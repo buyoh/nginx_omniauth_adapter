@@ -1,4 +1,4 @@
-require 'nginx_omniauth_adapter'
+require_relative 'lib/nginx_omniauth_adapter'
 require 'omniauth'
 require 'omniauth/version'
 require 'open-uri'

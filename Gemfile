@@ -6,3 +6,5 @@ gemspec
 gem 'omniauth-github'
 gem 'omniauth-google-oauth2', '>= 0.3.1'
 gem 'unicorn'
+
+gem 'rackup', '~> 1'
