@@ -42,6 +42,7 @@ use(
   expire_after: ENV['NGX_OMNIAUTH_SESSION_COOKIE_TIMEOUT'] ? ENV['NGX_OMNIAUTH_SESSION_COOKIE_TIMEOUT'].to_i : (60 * 60 * 24 * 3),
   secret:       ENV['NGX_OMNIAUTH_SESSION_SECRET'] || 'ngx_omniauth_secret_dev',
   old_secret:   ENV['NGX_OMNIAUTH_SESSION_SECRET_OLD'],
+  secure: ENV['NGX_A_OMNIAUTH_SESSION_SECURE'].to_s.upcase === 'TRUE'
 )
 
 providers = []
