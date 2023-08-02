@@ -1,5 +1,10 @@
 #!/bin/bash
 
+ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH=
+if [[ -f $1 ]]; then
+  ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH=$(realpath $1)
+fi
+
 cd $(dirname $0)
 cd ..
 
@@ -43,12 +48,19 @@ NGX_OMNIAUTH_SESSION_COOKIE_NAME=
 # NOTE: ADAPTER と期限が違うのは何故？
 NGX_OMNIAUTH_SESSION_COOKIE_TIMEOUT=
 
-# NGX_OMNIAUTH_GITHUB_KEY
-# NGX_OMNIAUTH_GITHUB_SECRET
+NGX_OMNIAUTH_GITHUB_KEY=
+NGX_OMNIAUTH_GITHUB_SECRET=
 
-# NGX_OMNIAUTH_GOOGLE_KEY
-# NGX_OMNIAUTH_GOOGLE_SECRET
-# NGX_OMNIAUTH_GOOGLE_HD
+NGX_OMNIAUTH_GOOGLE_KEY=
+NGX_OMNIAUTH_GOOGLE_SECRET=
+NGX_OMNIAUTH_GOOGLE_HD=
+if [[ -n $ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH ]]; then
+  echo 'google oauth is enabled'
+  # NGX_OMNIAUTH_HOST=$(cat $ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH | jq '.web.auth_uri' -r)
+  NGX_OMNIAUTH_GOOGLE_KEY=$(cat $ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH | jq '.web.client_id' -r)
+  NGX_OMNIAUTH_GOOGLE_SECRET=$(cat $ARG_GOOGLE_CLOUD_CLIENT_SECRET_FILEPATH | jq '.web.client_secret' -r)
+fi
+
 
 g_envs='
 NGX_OMNIAUTH_PROVIDER_HTTP_HEADER
@@ -59,18 +71,26 @@ NGX_OMNIAUTH_ALLOWED_BACK_TO_URL
 NGX_OMNIAUTH_ADAPTER_REFRESH_INTERVAL
 NGX_OMNIAUTH_SESSION_COOKIE_NAME
 NGX_OMNIAUTH_SESSION_COOKIE_TIMEOUT
+NGX_OMNIAUTH_GITHUB_KEY
+NGX_OMNIAUTH_GITHUB_SECRET
+NGX_OMNIAUTH_GOOGLE_KEY
+NGX_OMNIAUTH_GOOGLE_SECRET
+NGX_OMNIAUTH_GOOGLE_HD
 '
 
 g_envargs=
 for varname in $g_envs; do
-  if [[ ! -z $varname]]; then
-    g_envargs="$g_envargs $varname=${!varname}"
+  if [[ ! -z $varname ]] && [[ ! -z ${!varname} ]]; then
+    g_envargs="$g_envargs -e $varname=${!varname}"
   fi
 done
 
 docker run -it --rm \
   -p 18081:8080 \
+  -v $PWD/lib:/app/lib \
+  -v $PWD/config.ru:/app/config.ru \
   -e NGX_OMNIAUTH_DEV=1 \
   -e RACK_ENV=development \
   $g_envargs \
   nginx_omniauth_adapter
+# -v $PWD/oauth2.rb:/app/vendor/bundle/ruby/2.7.0/gems/omniauth-oauth2-1.8.0/lib/omniauth/strategies/oauth2.rb:ro \
