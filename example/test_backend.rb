@@ -1,7 +1,7 @@
 require 'sinatra'
 require 'json'
 
-get '/' do
+get '/private' do
   content_type :text
 
   {
@@ -11,9 +11,14 @@ get '/' do
   }.to_json
 end
 
-get '/hello' do
+get '/private/hello' do
   content_type :text
   'hola'
+end
+
+get '/' do
+  content_type :html
+  '<a href="/private">/private</a>'
 end
 
 get '/unauthorized' do
