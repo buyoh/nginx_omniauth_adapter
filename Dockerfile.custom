@@ -6,20 +6,19 @@ RUN mkdir -p /app
 
 ADD Gemfile* /app/
 ADD nginx_omniauth_adapter.gemspec /app/
-ADD * /app/
+ADD Rakefile /app/
 
-RUN cd /app && git init
+# required by nginx_omniauth_adapter.gemspec
 RUN mkdir -p /app/lib/nginx_omniauth_adapter
 ADD lib/nginx_omniauth_adapter/version.rb /app/lib/nginx_omniauth_adapter/version.rb
+
+# RUN cd /app && git init
 RUN cd /app \
-  && bundle config set path vendor/bundle
-  # && bundle config set without 'development test'
-RUN cd /app && bundle install
+  && bundle config set path vendor/bundle \
+  && bundle config set without 'development test' \
+  && bundle install
 
 WORKDIR /app
-ADD . /app
-# RUN cp -a /app/vendor /app/
-# RUN rm -f /app/.ruby-version
 
 EXPOSE 8080
 ENV RACK_ENV=production

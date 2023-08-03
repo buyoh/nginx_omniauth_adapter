@@ -94,6 +94,6 @@ g_envdevevelop=
 docker run -it --rm \
   -p 18081:8080 \
   -v $PWD/lib:/app/lib \
-  -v $PWD/config.ru:/app/config.ru \
+  -v $PWD/config.custom.ru:/app/config.ru \
   $g_envargs $g_envdevevelop \
   nginx_omniauth_adapter
