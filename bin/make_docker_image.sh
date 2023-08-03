@@ -3,4 +3,4 @@
 cd $(dirname $0)
 cd ..
 
-docker build . -t nginx_omniauth_adapter
+docker build . -f Dockerfile.custom -t nginx_omniauth_adapter
