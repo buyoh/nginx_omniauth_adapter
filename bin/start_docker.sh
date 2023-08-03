@@ -8,8 +8,6 @@ fi
 cd $(dirname $0)
 cd ..
 
-# TODO: configure env
-
 # [optional]
 # Name of HTTP header to specify OmniAuth provider to be used (see below).
 # Defaults to 'x-ngx-omniauth-provider`.
@@ -17,14 +15,14 @@ NGX_OMNIAUTH_PROVIDER_HTTP_HEADER=
 
 # [must]
 # Rack session secret. Should be set when not on dev mode
-NGX_OMNIAUTH_SESSION_SECRET=neko
+NGX_OMNIAUTH_SESSION_SECRET=$(openssl rand -hex 32)
 
 # [optinoal]
 # URL of adapter. This is used for redirection. Should include protocol
 # (e.g. `http://example.com`.)
 # If this is not specified, adapter will perform redirect using given `Host`
 # header.
-NGX_OMNIAUTH_HOST=
+NGX_OMNIAUTH_HOST=https://tesuto.ukibune.net
 
 # [optional]
 # (regexp): If specified, URL only matches to this are allowed for app callback url.
@@ -45,7 +43,6 @@ NGX_OMNIAUTH_SESSION_COOKIE_NAME=
 
 # [optional]
 # session cookie expiry (default 3 days)
-# NOTE: ADAPTER と期限が違うのは何故？
 NGX_OMNIAUTH_SESSION_COOKIE_TIMEOUT=
 
 # [optional][appended]
@@ -90,12 +87,13 @@ for varname in $g_envs; do
   fi
 done
 
+# メールアドレス等を任意に指定できる develop 版認証が追加される。
+g_envdevevelop=
+# g_envdevevelop="-e RACK_ENV=development"
+
 docker run -it --rm \
   -p 18081:8080 \
   -v $PWD/lib:/app/lib \
   -v $PWD/config.ru:/app/config.ru \
-  -e NGX_OMNIAUTH_DEV=1 \
-  -e RACK_ENV=development \
-  $g_envargs \
+  $g_envargs $g_envdevevelop \
   nginx_omniauth_adapter
-# -v $PWD/oauth2.rb:/app/vendor/bundle/ruby/2.7.0/gems/omniauth-oauth2-1.8.0/lib/omniauth/strategies/oauth2.rb:ro \
