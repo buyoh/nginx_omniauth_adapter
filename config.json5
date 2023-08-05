@@ -25,4 +25,11 @@
   session_cookie_timeout: null,
   // use https only cookie if true
   session_secure: false,
+  // 
+  policy: {
+    allow_list: {
+      'github': {user: []},  // deny all
+      google_oauth2: null,
+    }
+  }
 }

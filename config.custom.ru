@@ -100,13 +100,48 @@ if google_secet_json_config
 end
 # TODO: impl
 arg_google_hd = ENV['NGX_OMNIAUTH_GOOGLE_HD']
+gh_teams = ENV['NGX_OMNIAUTH_GITHUB_TEAMS'] && ENV['NGX_OMNIAUTH_GITHUB_TEAMS'].split(/[, ]/)
+
+# Policy
+policy_allow_list = nil
+if policy = json_config['policy']
+  if al = policy['allow_list']
+    # validate
+    if al.values.all? {|allow| (!allow['user'] || allow['user'].is_a?(Array))}
+      policy_allow_list = al
+    end
+  end
+end
 
 # -----------------------------------------------------------------------------
+
+policy_proc = proc {
+  # TODO: サーバの再起動なしで再設定できるようにする。
+  if gh_teams && current_user[:provider] == 'github'
+    unless (current_user_data[:gh_teams] || []).any? { |team| gh_teams.include?(team) }
+      next false
+    end
+  end
+
+  if policy_allow_list
+    provider = current_user[:provider]
+    uid = current_user[:uid]
+    if al = policy_allow_list[provider]
+      if al['user'] && !al['user'].include?(uid)
+        next false
+      end
+    end
+  end
+
+  true
+}
 
 # Not implemented:
 # NGX_OMNIAUTH_GITHUB_KEY
 # NGX_OMNIAUTH_GITHUB_SECRET
 # NGX_OMNIAUTH_GOOGLE_HD
+
+# -----------------------------------------------------------------------------
 
 dev = arg_dev || arg_rack_env == 'development'
 test = arg_rack_env == 'test'
@@ -139,8 +174,6 @@ use(
 )
 
 providers = []
-
-gh_teams = ENV['NGX_OMNIAUTH_GITHUB_TEAMS'] && ENV['NGX_OMNIAUTH_GITHUB_TEAMS'].split(/[, ]/)
 
 use OmniAuth::Builder do
   if ENV['NGX_OMNIAUTH_GITHUB_KEY'] && ENV['NGX_OMNIAUTH_GITHUB_SECRET']
@@ -182,15 +215,7 @@ run NginxOmniauthAdapter.app(
   allowed_back_to_url: arg_allowed_back_to_url,
   app_refresh_interval: arg_app_refresh_interval,
   adapter_refresh_interval: arg_adapter_refresh_interval,
-  policy_proc: proc {
-    if gh_teams && current_user[:provider] == 'github'
-      unless (current_user_data[:gh_teams] || []).any? { |team| gh_teams.include?(team) }
-        next false
-      end
-    end
-
-    true
-  },
+  policy_proc: policy_proc,
   on_login_proc: proc {
     auth = env['omniauth.auth']
     case auth[:provider]
