@@ -1,0 +1,28 @@
+{
+  // メールアドレス等を任意に指定できる develop 版認証が追加される。
+  dev: true,
+  rack_env: "development",
+  // Name of HTTP header to specify OmniAuth provider to be used
+  provider_http_header: null,
+  // URL of adapter. This is used for redirection. Should include protocol
+  // (e.g. `http://example.com`.)
+  // If this is not specified, adapter will perform redirect using given `Host`
+  // header.
+  host: "http://example.com",
+  // (regexp): If specified, URL only matches to this are allowed for app callback url.
+  allowed_app_callback_url_regexp: null,
+  // (regexp): If specified, URL only matches to this are allowed for back_to url.
+  allowed_back_to_url: null,
+  // (integer): Interval to require refresh session cookie on app domain
+  // (in second, default 1 day).
+  app_refresh_interval: null,
+  // (integer): Interval to require refresh session cookie on app domain
+  // (in second, default 1 day).
+  adapter_refresh_interval: null,
+  // session cookie name (default `ngx_omniauth`)
+  session_cookie_name: null,
+  // session cookie expiry (default 3 days)
+  session_cookie_timeout: null,
+  // use https only cookie if true
+  session_secure: false,
+}

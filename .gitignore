@@ -9,3 +9,4 @@
 /tmp/
 
 /client_secret*.json
+/*priv.json*
