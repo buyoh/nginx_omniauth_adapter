@@ -137,11 +137,13 @@ module NginxOmniauthAdapter
       end
 
       def app_authorization_expired?
-        app_refresh_interval && current_user && (Time.now - current_authorized_at) > app_refresh_interval
+        # TODO: Why is current_authorized_at null
+        app_refresh_interval && current_user && current_authorized_at && (Time.now - current_authorized_at) > app_refresh_interval
       end
 
       def adapter_authorization_expired?
-        adapter_refresh_interval && current_user && (Time.now - current_logged_in_at) > adapter_refresh_interval
+        # TODO: Why is current_authorized_at null
+        adapter_refresh_interval && current_user && current_authorized_at && (Time.now - current_logged_in_at) > adapter_refresh_interval
       end
 
       def update_session!(auth = nil)
