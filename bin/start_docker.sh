@@ -46,7 +46,7 @@ for varname in $g_envs; do
   fi
 done
 
-docker run -it --rm \
+docker run --rm \
   -p $g_port:8080 \
   -v $PWD/lib:/app/lib \
   -v $PWD/config.custom.ru:/app/config.ru \
