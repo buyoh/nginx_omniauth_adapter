@@ -20,6 +20,11 @@ fi
 cd $(dirname $0)
 cd ..
 
+g_port=18081
+if [[ x$PORT != x ]]; then
+  g_port=$PORT
+fi
+
 NGX_OMNIAUTH_SESSION_SECRET=$(openssl rand -hex 32)
 
 NGX_A_OMNIAUTH_CONFIG_JSON=$(cat $ARG_CONFIG_JSON_FILEPATH | json5json)
@@ -42,7 +47,7 @@ for varname in $g_envs; do
 done
 
 docker run -it --rm \
-  -p 18081:8080 \
+  -p $g_port:8080 \
   -v $PWD/lib:/app/lib \
   -v $PWD/config.custom.ru:/app/config.ru \
   $g_envargs \
