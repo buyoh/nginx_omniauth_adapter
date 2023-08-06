@@ -25,6 +25,8 @@
   session_cookie_timeout: null,
   // use https only cookie if true
   session_secure: false,
+  // A domain for cookie. Specify the parent domain if different subdomains work.
+  arg_cookie_domain: null,
   // 
   policy: {
     allow_list: {

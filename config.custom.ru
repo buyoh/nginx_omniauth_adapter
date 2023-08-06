@@ -90,6 +90,11 @@ abort "session_cookie_timeout is not Numeric" unless arg_session_cookie_timeout.
 # use https only cookie if true
 arg_session_secure = is_true_value(json_config['session_secure']) 
 
+# [optional][appended]
+# A domain for cookie. Specify the parent domain if different subdomains work.
+arg_cookie_domain = json_config['arg_cookie_domain']
+arg_cookie_domain = nil if !arg_cookie_domain.is_a?(String) || arg_cookie_domain.empty?
+
 # NGX_OMNIAUTH_GOOGLE_KEY
 # NGX_OMNIAUTH_GOOGLE_SECRET
 arg_google_key = nil
@@ -170,7 +175,8 @@ use(
   expire_after: arg_session_cookie_timeout,
   secret:       arg_session_secret || 'ngx_omniauth_secret_dev',
   # old_secret:   ENV['NGX_OMNIAUTH_SESSION_SECRET_OLD'], 
-  secure: arg_session_secure
+  secure: arg_session_secure,
+  domain: arg_cookie_domain
 )
 
 providers = []
